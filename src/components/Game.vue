@@ -1,13 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 
-interface Quote {
-    text?: string;
-    image?: string;
-    possible: string[];
-    id: number;
-}
-
 const props = defineProps<{ url: string }>();
 
 const quote = ref<Quote | null>(null);
@@ -19,7 +12,7 @@ async function check(guess: string) {
     }
 
     const response = await fetch(`${props.url}/api/check?id=${quote.value.id}&guess=${guess}`);
-    const { answer } = await response.json();
+    const { answer }: { answer: string } = await response.json();
 
     const clicked = document.getElementById(guess);
     const correct = document.getElementById(answer);

@@ -1,10 +1,14 @@
 import type { APIRoute } from "astro";
 
-import quotes from '../../data/quotes.json';
+export const GET: APIRoute = async ({locals}) => {
+    const quotesBucket = await locals.runtime.env.QUOTES_BUCKET.get('quotes.json');
+    if (!quotesBucket) {
+        return new Response(null, {status: 500});
+    }
 
-const people = new Set(quotes.map(quote => quote.author));
+    const quotes: JsonQuote[] = await quotesBucket.json();
+    const people = new Set(quotes.map(quote => quote.author));
 
-export const GET: APIRoute = async () => {
     const i = Math.floor(Math.random() * quotes.length);
     const quote = quotes[i];
 
