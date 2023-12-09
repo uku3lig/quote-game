@@ -4,48 +4,53 @@ import { onMounted, ref } from 'vue';
 interface Quote {
     text?: string;
     image?: string;
+    possible: string[];
     id: number;
 }
 
 const props = defineProps<{ url: string }>();
 
 const quote = ref<Quote | null>(null);
-const people = ref<string[] | null>(null);
-
 const score = ref<number>(0);
-const selected = ref<string | null>(null);
 
-async function check() {
-    if (!quote.value || !selected.value) {
+async function check(guess: string) {
+    if (!quote.value || !guess) {
         return;
     }
 
-    const response = await fetch(`${props.url}/api/check?id=${quote.value.id}&guess=${selected.value}`);
+    const response = await fetch(`${props.url}/api/check?id=${quote.value.id}&guess=${guess}`);
+    const { answer } = await response.json();
 
-    if (response.ok) {
-        const result = await response.json();
-        if (result.correct) {
-            score.value++;
-        } else {
-            alert(`Et non! Cette citation vient de ${result.answer}. Ton score était ${score.value}`);
-            score.value = 0;
-        }
-    } else {
-        alert("le site il est tout cassé :(");
-        console.log(response);
+    const clicked = document.getElementById(guess);
+    const correct = document.getElementById(answer);
+
+    if (!clicked || !correct) {
+        return;
     }
 
-    quote.value = await fetch(props.url + "/api/random").then((res) => res.json());
+    if (answer === guess) {
+        clicked.style.backgroundColor = "green";
+        score.value++;
+    } else {
+        correct.style.backgroundColor = "green";
+        clicked.style.backgroundColor = "red";
+        score.value = 0;
+    }
+
+    setTimeout(async () => {
+        correct.style.backgroundColor = "#23262d";
+        clicked.style.backgroundColor = "#23262d";
+        quote.value = await fetch(props.url + "/api/random").then((res) => res.json());
+    }, 1000);
 }
 
 onMounted(async () => {
     quote.value = await fetch(props.url + "/api/random").then((res) => res.json());
-    people.value = await fetch(props.url + "/api/people").then((res) => res.json());
 })
 </script>
 
 <template>
-    <div v-if="quote && people">
+    <div v-if="quote">
         <p class="quote">
         <div v-if="quote.text">
             {{ quote.text }}
@@ -55,21 +60,21 @@ onMounted(async () => {
         </div>
         </p>
 
-        <div class="input">
-            <select v-model="selected" class="input-select">
-                <option v-for="p in people" :value="p">{{ p }}</option>
-            </select>
-            <br />
-            <button @click="check">Check</button>
+        <div class="input-grid">
+            <div v-for="p in quote.possible" :id="p" class="input" @click="check(p)">{{ p }}</div>
         </div>
 
-        <p class="input">Score: {{ score }}</p>
+        <h2>Score: {{ score }}</h2>
     </div>
 
-    <p v-else class="quote">Loading...</p>
+    <h2 v-else>Loading...</h2>
 </template>
 
 <style scoped>
+h2 {
+    text-align: center;
+}
+
 .quote {
     margin-bottom: 2rem;
     border: 1px solid rgba(var(--accent-light), 25%);
@@ -81,15 +86,24 @@ onMounted(async () => {
     white-space: pre-wrap;
 }
 
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+    gap: 1rem;
+}
+
 .input {
     text-align: center;
     padding: 6px;
     background-color: #23262d;
-    background-image: none;
     border-radius: 7px;
-    background-position: 100%;
-    transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.input:is(:hover, :focus-within) {
+    background-color: #14161A;
 }
 
 img {

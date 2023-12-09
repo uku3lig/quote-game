@@ -15,7 +15,6 @@ export const GET: APIRoute = async ({request}) => {
     }
     
     return new Response(JSON.stringify({
-        correct: quote.author === params.guess,
         answer: quote.author
     }));
 }
