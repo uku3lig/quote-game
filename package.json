@@ -1,20 +1,25 @@
 {
-  "name": "quote-game",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/check": "^0.3.1",
-    "@astrojs/cloudflare": "^8.0.0",
-    "@astrojs/vue": "^4.0.2",
-    "astro": "^4.0.3",
-    "typescript": "^5.3.3",
-    "vue": "^3.3.10"
-  }
+	"name": "quote-game",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"fmt": "prettier --write . --plugin=prettier-plugin-astro"
+	},
+	"dependencies": {
+		"@astrojs/check": "^0.3.1",
+		"@astrojs/cloudflare": "^8.0.0",
+		"@astrojs/vue": "^4.0.2",
+		"astro": "^4.0.3",
+		"typescript": "^5.3.3",
+		"vue": "^3.3.10"
+	},
+	"devDependencies": {
+		"prettier": "^3.1.0",
+		"prettier-plugin-astro": "^0.12.2"
+	}
 }
