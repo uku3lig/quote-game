@@ -5,11 +5,14 @@ const props = defineProps<{ url: string }>();
 
 const quote = ref<Quote | null>(null);
 const score = ref<number>(0);
+const isChecking = ref<boolean>(false);
 
 async function check(guess: string) {
-	if (!quote.value || !guess) {
+	if (!quote.value || !guess || isChecking.value) {
 		return;
 	}
+
+    isChecking.value = true;
 
 	const response = await fetch(
 		`${props.url}/api/check?id=${quote.value.id}&guess=${guess}`,
@@ -38,6 +41,8 @@ async function check(guess: string) {
 		quote.value = await fetch(props.url + "/api/random").then((res) =>
 			res.json(),
 		);
+
+        isChecking.value = false;
 	}, 1000);
 }
 
